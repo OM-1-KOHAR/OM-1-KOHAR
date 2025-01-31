@@ -1,5 +1,106 @@
 
-Exploratory-Data-Analysis(EDA) with pandas for COVID-19 
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
 
-Project Overview
-To analyze and visualize COVID-19 data at a global level, highlighting key statistics such as the number of confirmed cases, recovery rates, death rates, and regional distributions. The goal is to provide insights into the spread and impact of the pandemic
+import warnings
+warnings.filterwarnings('ignore')
+
+# LOAD DATA
+
+data_path ="country_wise_latest.csv"
+df= pd.read_csv(data_path)
+
+# TO GET INFORMATION ABOUT DATASET
+
+print("Dataset Information:\n")
+print(df.info())
+
+#  TO GET FULL SUMMARY AND STATASTICS
+
+print("\nSummary Statistics:\n")
+print(df.describe())
+
+# FIND MISSING VALUES
+
+print("\nMissing Values:\n")
+print(df.isnull().sum())
+
+# TO CHECK UNIQUE VALUES
+
+print("\nUnique Values per Column:\n")
+print(df.nunique())
+
+print("\nDuplicate Rows:", df.duplicated().sum())
+
+# DROP DUPLICATES VALUES
+
+df = df.drop_duplicates()
+
+# New deaths in Country or regions
+New_death_in_regions = df.groupby('Country/Region')['New deaths'].sum().sort_values(ascending=False)
+print("\nNew Death in Country/Regions:\n",New_death_in_regions)
+
+top_countries = df.nlargest(10, 'Confirmed')
+
+# BAR CHART FOR MOST CONFIRMED CASES FOR Country/Region
+plt.figure(figsize=(12, 6))
+sns.barplot(x='Confirmed', y='Country/Region', data=top_countries, palette='Reds_r')
+plt.xlabel('Total Confirmed Cases')
+plt.ylabel('Country')
+plt.title('Top 10 Countries with Most Confirmed Cases')
+plt.show()
+
+# SCATTER CHART FOR RECOVERY RATES VS DEATH RATES IN COUNTRY/REGION
+
+plt.figure(figsize=(10, 6))
+sns.scatterplot(x='Deaths / 100 Cases', y='Recovered / 100 Cases', hue='WHO Region', data=df, palette='viridis')
+plt.xlabel('Death Rate (%)')
+plt.ylabel('Recovery Rate (%)')
+plt.title('Death Rate vs Recovery Rate by Country')
+plt.legend(title="WHO Region", bbox_to_anchor=(1.05, 1), loc='upper right')
+plt.show()
+
+
+# PIE CHART FOR CONFIRMED CASES BY WHO REGIONS
+
+plt.figure(figsize=(6, 6))
+df.groupby('WHO Region')['Confirmed'].sum().plot(kind='pie', autopct='%1.1f%%', cmap='coolwarm', startangle=140)
+
+plt.ylabel('')  # Hide y-label
+plt.title('Confirmed Cases by WHO Region')
+"""plt.legend(loc='lower left')"""
+plt.show()
+
+# HISTOGRAM GRAPH FOR INCREASEING NUMBER OF CASES WEEKLY
+
+plt.figure(figsize=(10, 6))
+sns.histplot(df['1 week % increase'], bins=20, kde=True, color='purple')
+plt.xlabel('1 Week % Increase')
+plt.ylabel('Number of Countries')
+plt.title('Distribution of Weekly Increase in Cases')
+plt.show()
+
+
+# STACKED BAR CHART FOR COVID-19 METRICS(RECOVERED,DEATH,CONFIRMED) BY COUNTRY/REGIONS
+
+top_countries = df.nlargest(5, 'Confirmed')
+df_top_countries = df.nlargest(10, 'Confirmed')
+df_melted = df_top_countries.melt(id_vars=['Country/Region'], value_vars=['Confirmed', 'Deaths', 'Recovered'],
+                                  var_name='Metric', value_name='Count')
+plt.figure(figsize=(12, 6))
+sns.barplot(x='Country/Region', y='Count', hue='Metric', data=df_melted)
+plt.xlabel('Country/Region')
+plt.ylabel('Count')
+plt.title('Stacked Bar Chart of COVID-19 Metrics by Country')
+plt.show()
+
+
+
+
+
+
+
+
+
