@@ -1,4 +1,4 @@
-# Exploratory-Data-Analysis-COVID- 19 data
+# Exploratory-Data-Analysis(EDA)-COVID- 19 data
 ## Project Overview
 
 To analyze and visualize COVID-19 data at a global level, highlighting key statistics such as the number of confirmed cases, recovery rates, death rates, and regional distributions. The goal is to provide insights into the spread and impact of the pandemic.
